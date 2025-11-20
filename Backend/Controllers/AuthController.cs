@@ -12,8 +12,13 @@ namespace MyApp.Namespace
     {
         
         private readonly UserManager<User> _userManager;
+        private readonly IAuthService _authService;
 
-        public AuthController(UserManager<User> userManager) => _userManager = userManager;
+        public AuthController(UserManager<User> userManager, IAuthService authService)
+        {
+            _userManager = userManager;
+            _authService = authService;    
+        }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest request)
@@ -34,6 +39,22 @@ namespace MyApp.Namespace
             await _userManager.AddToRoleAsync(user, "User");
 
             return Ok();
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
+        {
+            var response = await _userManager.FindByEmailAsync(request.Email);
+
+            if (response is null) return BadRequest("User Not Found");
+
+            var result = await _userManager.CheckPasswordAsync(response, request.Password);
+
+            if (result == false) return BadRequest("Wrong Password");
+
+            var token = await _authService.CreateJWT(response);
+            
+            return Ok(token);
         }
 
     }
