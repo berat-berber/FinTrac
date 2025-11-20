@@ -15,18 +15,23 @@ namespace MyApp.Namespace
 
         public AuthController(UserManager<User> userManager) => _userManager = userManager;
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
             var response = await _userManager.FindByEmailAsync(request.Email);
 
             if (response is not null) return BadRequest("User Exists");
 
-            var user = new User() {Email = request.Email};
+            var user = new User() {
+                Email = request.Email,
+                UserName = request.Email
+            };
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded) return BadRequest(result);
+
+            await _userManager.AddToRoleAsync(user, "User");
 
             return Ok();
         }
