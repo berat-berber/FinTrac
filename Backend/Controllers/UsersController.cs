@@ -1,4 +1,5 @@
 using Backend;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace MyApp.Namespace
         public UsersController(UserManager<User> userManager) => _userManager = userManager;
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateUser([FromBody] CreateUserRequest request)
         {
             User user = new User()
@@ -36,6 +38,7 @@ namespace MyApp.Namespace
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -46,6 +49,7 @@ namespace MyApp.Namespace
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -56,6 +60,7 @@ namespace MyApp.Namespace
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest request)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -87,6 +92,7 @@ namespace MyApp.Namespace
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
