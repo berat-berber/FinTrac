@@ -11,15 +11,15 @@ namespace Backend;
 public class AuthService : IAuthService
 {
 
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
 
-    public AuthService(UserManager<User> userManager, IConfiguration configuration)
+    public AuthService(UserManager<IdentityUser> userManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _configuration = configuration;
     } 
-    public async Task<string> CreateJWT(User user){
+    public async Task<string> CreateJWT(IdentityUser user){
 
     var roles = await _userManager.GetRolesAsync(user);
 

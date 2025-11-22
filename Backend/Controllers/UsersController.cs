@@ -12,11 +12,11 @@ namespace MyApp.Namespace
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IValidator<CreateUserRequest> _createValidator;
         private readonly IValidator<UpdateUserRequest> _updateValidator;
 
-        public UsersController(UserManager<User> userManager, IValidator<CreateUserRequest> createValidator,
+        public UsersController(UserManager<IdentityUser> userManager, IValidator<CreateUserRequest> createValidator,
             IValidator<UpdateUserRequest> updateValidator)
         {
             _userManager = userManager;
@@ -33,7 +33,7 @@ namespace MyApp.Namespace
 
             if(!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
-            User user = new User()
+            var user = new IdentityUser()
             {
                 Email = request.Email,
                 UserName = request.Email,

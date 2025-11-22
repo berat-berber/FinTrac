@@ -11,10 +11,10 @@ namespace MyApp.Namespace
     public class AuthController : ControllerBase
     {
         
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IAuthService _authService;
 
-        public AuthController(UserManager<User> userManager, IAuthService authService)
+        public AuthController(UserManager<IdentityUser> userManager, IAuthService authService)
         {
             _userManager = userManager;
             _authService = authService;    
@@ -27,7 +27,7 @@ namespace MyApp.Namespace
 
             if (response is not null) return BadRequest("User Exists");
 
-            var user = new User() {
+            var user = new IdentityUser() {
                 Email = request.Email,
                 UserName = request.Email
             };

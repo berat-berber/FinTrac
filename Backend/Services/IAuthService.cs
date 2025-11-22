@@ -1,6 +1,8 @@
-﻿namespace Backend;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Backend;
 
 public interface IAuthService
 {
-    public Task<string> CreateJWT(User user);
+    public Task<string> CreateJWT(IdentityUser user);
 }
