@@ -25,7 +25,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(ConnectionString));
 
 // Add identity service
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentityCore<User>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
