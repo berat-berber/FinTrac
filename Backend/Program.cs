@@ -32,7 +32,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
 // Add Fluent Validation service
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
-// Configure JWT authentication
+// Add JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -48,6 +48,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     }
     );
+
+// Add authorization service
+builder.Services.AddAuthorization();
 
 // Services Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -74,7 +77,14 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole("User"));
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request to: {context.Request.Path}");
+    Console.WriteLine($"Auth header: {context.Request.Headers["Authorization"]}");
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

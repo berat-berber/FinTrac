@@ -26,8 +26,12 @@ public class AuthService : IAuthService
     List<Claim> claims = new List<Claim>
     {
         new Claim(ClaimTypes.Email, user.Email!),
-        new Claim(ClaimTypes.Role, roles[0])
     };
+
+    foreach (var role in roles)
+    {
+        claims.Add(new Claim(ClaimTypes.Role, role));
+    }
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfig:Key")!));
 
