@@ -25,7 +25,7 @@ public class AuthService : IAuthService
 
     List<Claim> claims = new List<Claim>
     {
-        new Claim(ClaimTypes.Email, user.Email!),
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
     };
 
     foreach (var role in roles)
