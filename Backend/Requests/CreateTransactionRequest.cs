@@ -1,0 +1,10 @@
+﻿namespace Backend;
+
+public class CreateTransactionRequest
+{
+    public string BankName {get;set;} = String.Empty;
+
+    public IFormFile File {get;set;} = null!;
+
+    public string AccountName {get;set;} = String.Empty;
+}
