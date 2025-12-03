@@ -78,14 +78,8 @@ using (var scope = app.Services.CreateScope())
     if (!await roleManager.RoleExistsAsync("User"))
         await roleManager.CreateAsync(new IdentityRole("User"));
 }
-//app.UseHttpsRedirection();
 
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Request to: {context.Request.Path}");
-    Console.WriteLine($"Auth header: {context.Request.Headers["Authorization"]}");
-    await next();
-});
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
