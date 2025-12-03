@@ -4,6 +4,8 @@ using System.Security.Claims;
 using System.Text;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 
 
 namespace Backend;
@@ -33,6 +35,14 @@ public class TransactionsService : ITransactionsService
         }
 
         return filePath;
+    }
+
+    public void DeleteFile(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
     }
 
     public async Task<List<Transaction>> ZiraatBankParser(string filePath, string accountName, string userId)
@@ -103,6 +113,87 @@ public class TransactionsService : ITransactionsService
             });
 
             transactionRow++;
+        }
+
+        return transactions;
+    }
+
+    public async Task<List<Transaction>> IsBankParser(IFormFile file, string accountName, string userId)
+    {
+        decimal amount;
+        string description;
+        decimal balance;
+        int transactionCategoryId = 0;
+        int order = 0;
+        DateTime date;
+        DateTime previousDate = DateTime.Now;
+
+        var accountId = await _context.Accounts
+            .Where(a => a.Name == accountName && a.UserId == userId)
+            .Select(a => a.Id)
+            .FirstOrDefaultAsync();
+
+        var transactions = new List<Transaction>(){};
+
+        using (var stream = file.OpenReadStream())
+        {
+            IWorkbook workbook = new HSSFWorkbook(stream);
+            ISheet sheet = workbook.GetSheetAt(0);
+
+            int transactionRow = 0;
+
+            for (int i = 0; i <= sheet.LastRowNum; i++)
+            {
+                var row = sheet.GetRow(i);
+                if (row == null) continue;
+
+                var cellValue = row.GetCell(0)?.ToString();
+                
+                if(cellValue == "Tarih/Saat")
+                {
+                    transactionRow = i+1;
+                    break;
+                }
+            }
+
+            while(transactionRow <= sheet.LastRowNum){
+
+                var row = sheet.GetRow(transactionRow);
+                if (row == null) break;
+                else if (row.GetCell(0) == null) break;
+                
+                
+                amount = Convert.ToDecimal(row.GetCell(3)?.ToString());
+                description = row.GetCell(8)?.ToString()!;
+                balance = Convert.ToDecimal(row.GetCell(4)?.ToString());
+
+                if(DateTime.TryParseExact(row.GetCell(0)?.ToString(), "dd/MM/yyyy-HH:mm:ss", 
+                culture, DateTimeStyles.None, out DateTime dt))
+                {
+                    date = dt;
+                }
+                else return null!;
+
+                if(date.CompareTo(previousDate) == 0) order++;
+                else
+                {
+                    order = 0;
+                    previousDate = date;
+                }
+
+                transactions.Add(new Transaction
+                {
+                    AccountId = accountId!,
+                    Amount = amount,
+                    Balance = balance,
+                    DateTime = date,
+                    Description = description,
+                    TransactionCategoryId = transactionCategoryId,
+                    Order = order
+                });
+                    
+                transactionRow++;
+            }
         }
 
         return transactions;

@@ -34,6 +34,12 @@ namespace MyApp.Namespace
             {
                 transactions = await _transactionsService.ZiraatBankParser(filePath,request.AccountName, userId);
             }
+            else if(request.BankName == "Is Bank")
+            {
+                transactions = await _transactionsService.IsBankParser(request.File,request.AccountName, userId);
+            }
+
+            _transactionsService.DeleteFile(filePath);
 
             return Ok(transactions);
         }
