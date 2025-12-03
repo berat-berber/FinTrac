@@ -55,6 +55,7 @@ builder.Services.AddAuthorization();
 
 // Services Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 
 var app = builder.Build();
 
@@ -77,7 +78,6 @@ using (var scope = app.Services.CreateScope())
     if (!await roleManager.RoleExistsAsync("User"))
         await roleManager.CreateAsync(new IdentityRole("User"));
 }
-
 //app.UseHttpsRedirection();
 
 app.Use(async (context, next) =>
