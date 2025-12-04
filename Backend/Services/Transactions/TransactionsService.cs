@@ -5,6 +5,7 @@ using System.Text;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 
 
@@ -55,6 +56,17 @@ public class TransactionsService : ITransactionsService
         DateTime date = DateTime.Now;
         DateTime previousDate = DateTime.Now;
 
+        var accountId = await _context.Accounts
+                .Where(a => a.Name == accountName && a.UserId == userId)
+                .Select(a => a.Id)
+                .FirstOrDefaultAsync();
+
+        var lastTransactionDate = await _context.Transactions
+            .Where(t => t.AccountId == accountId)
+            .OrderByDescending(t => t.DateTime)
+            .ThenBy(t => t.Order)
+            .FirstOrDefaultAsync();
+
         var workbook = new XLWorkbook(filePath);
         var worksheet = workbook.Worksheet(1);
 
@@ -78,17 +90,14 @@ public class TransactionsService : ITransactionsService
             var row = worksheet.Row(transactionRow);
             if (row.Cell(1).IsEmpty()) break;
 
-            var accountId = await _context.Accounts
-                .Where(a => a.Name == accountName && a.UserId == userId)
-                .Select(a => a.Id)
-                .FirstOrDefaultAsync();
-
             if(DateTime.TryParseExact(row.Cell(1).Value.ToString(), "dd.MM.yyyy", culture,
             DateTimeStyles.None, out DateTime dt))
             {
                 date = dt;
             }
             else return null!;
+
+            if(date.CompareTo(lastTransactionDate) <= 0 && lastTransactionDate is not null) break;
 
             if(date.CompareTo(previousDate) == 0) order++;
             else
@@ -133,6 +142,12 @@ public class TransactionsService : ITransactionsService
             .Select(a => a.Id)
             .FirstOrDefaultAsync();
 
+        var lastTransactionDate = await _context.Transactions
+            .Where(t => t.AccountId == accountId)
+            .OrderByDescending(t => t.DateTime)
+            .ThenBy(t => t.Order)
+            .FirstOrDefaultAsync();
+
         var transactions = new List<Transaction>(){};
 
         using (var stream = file.OpenReadStream())
@@ -161,11 +176,6 @@ public class TransactionsService : ITransactionsService
                 var row = sheet.GetRow(transactionRow);
                 if (row == null) break;
                 else if (row.GetCell(0) == null) break;
-                
-                
-                amount = Convert.ToDecimal(row.GetCell(3)?.ToString());
-                description = row.GetCell(8)?.ToString()!;
-                balance = Convert.ToDecimal(row.GetCell(4)?.ToString());
 
                 if(DateTime.TryParseExact(row.GetCell(0)?.ToString(), "dd/MM/yyyy-HH:mm:ss", 
                 culture, DateTimeStyles.None, out DateTime dt))
@@ -173,6 +183,12 @@ public class TransactionsService : ITransactionsService
                     date = dt;
                 }
                 else return null!;
+
+                if(date.CompareTo(lastTransactionDate) <= 0 && lastTransactionDate is not null) break;
+                
+                amount = Convert.ToDecimal(row.GetCell(3)?.ToString());
+                description = row.GetCell(8)?.ToString()!;
+                balance = Convert.ToDecimal(row.GetCell(4)?.ToString());
 
                 if(date.CompareTo(previousDate) == 0) order++;
                 else
