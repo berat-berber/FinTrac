@@ -11,37 +11,6 @@ namespace MyApp.Namespace
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-
-        private readonly ITransactionsService _transactionsService;
-
-        public TransactionsController(ITransactionsService transactionsService)
-        {
-            _transactionsService = transactionsService;
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "User")]
-        [Consumes("multipart/form-data")]
-        public async Task<ActionResult> CreateTransactions([FromForm] CreateTransactionRequest request)
-        {
-            var filePath = await _transactionsService.SaveExcelFile(request.File);
-
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-
-            List<Transaction> transactions = new();
-
-            if(request.BankName == "Ziraat Bank")
-            {
-                transactions = await _transactionsService.ZiraatBankParser(filePath,request.AccountName, userId);
-            }
-            else if(request.BankName == "Is Bank")
-            {
-                transactions = await _transactionsService.IsBankParser(request.File,request.AccountName, userId);
-            }
-
-            _transactionsService.DeleteFile(filePath);
-
-            return Ok(transactions);
-        }
+        
     }
 }
