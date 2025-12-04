@@ -21,7 +21,7 @@ namespace MyApp.Namespace
         [HttpPost]
         [Authorize(Roles = "User")]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult> UploadSummary([FromForm] CreateTransactionRequest request)
+        public async Task<ActionResult> UploadSummary([FromForm] UploadSummaryRequest request)
         {
             var filePath = await _transactionsService.SaveExcelFile(request.File);
 

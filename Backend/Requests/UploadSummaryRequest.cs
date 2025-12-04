@@ -1,6 +1,6 @@
 ﻿namespace Backend;
 
-public class CreateTransactionRequest
+public class UploadSummaryRequest
 {
     public string BankName {get;set;} = String.Empty;
 
