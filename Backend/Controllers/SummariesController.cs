@@ -27,20 +27,20 @@ namespace MyApp.Namespace
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-            List<Transaction> transactions = new();
+            List<FileParseResponse> parsed = new();
 
             if(request.BankName == "Ziraat Bank")
             {
-                transactions = await _transactionsService.ZiraatBankParser(filePath,request.AccountName, userId);
+                parsed = await _transactionsService.ZiraatBankParser(filePath,request.AccountName, userId);
             }
             else if(request.BankName == "Is Bank")
             {
-                transactions = await _transactionsService.IsBankParser(request.File,request.AccountName, userId);
+                parsed = await _transactionsService.IsBankParser(request.File,request.AccountName, userId);
             }
 
             _transactionsService.DeleteFile(filePath);
 
-            return Ok(transactions);
+            return Ok(parsed);
         }
     }
 }

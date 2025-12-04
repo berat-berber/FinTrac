@@ -46,25 +46,60 @@ public class TransactionsService : ITransactionsService
         }
     }
 
-    public async Task<List<Transaction>> ZiraatBankParser(string filePath, string accountName, string userId)
+    public async Task<List<Transaction>> CreateTransactions(List<FileParseResponse> parses, string accountName,  string userId){
+        
+        var accountId = await _context.Accounts
+            .Where(a => a.Name == accountName && a.UserId == userId)
+            .Select(a => a.Id)
+            .FirstOrDefaultAsync();
+
+        List<Transaction> transactions = new();
+
+        foreach(var p in parses)
+        {
+            transactions.Add(new Transaction
+            {
+               AccountId = accountId!,
+               DateTime = p.DateTime,
+               Amount = p.Amount,
+               Description = p.Desc,
+               Balance = p.Balance,
+               TransactionCategoryId = 1,
+               Order = p.Order
+            });
+        }
+
+        return transactions;
+    }
+
+    public async Task<List<FileParseResponse>> ZiraatBankParser(string filePath, string accountName, string userId)
     {
         decimal amount;
         string description;
         decimal balance;
-        int transactionCategoryId = 0;
         int order = 0;
-        DateTime date = DateTime.Now;
-        DateTime previousDate = DateTime.Now;
+        DateTime date;
+        DateTime previousDate = DateTime.Now.ToUniversalTime();
+
+        var turkeyTimezone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul");
 
         var accountId = await _context.Accounts
-                .Where(a => a.Name == accountName && a.UserId == userId)
-                .Select(a => a.Id)
-                .FirstOrDefaultAsync();
+            .Where(a => a.Name == accountName && a.UserId == userId)
+            .Select(a => a.Id)
+            .FirstOrDefaultAsync();
 
-        var lastTransactionDate = await _context.Transactions
+        var newestTransactionDate = await _context.Transactions
             .Where(t => t.AccountId == accountId)
             .OrderByDescending(t => t.DateTime)
             .ThenBy(t => t.Order)
+            .Select(t => t.DateTime)
+            .FirstOrDefaultAsync();
+
+        var oldestTransactionDate = await _context.Transactions
+            .Where(t => t.AccountId == accountId)
+            .OrderBy(t => t.DateTime)
+            .ThenByDescending(t => t.Order)
+            .Select(t => t.DateTime)
             .FirstOrDefaultAsync();
 
         var workbook = new XLWorkbook(filePath);
@@ -72,7 +107,7 @@ public class TransactionsService : ITransactionsService
 
         int headerRow = 0;
 
-        var transactions = new List<Transaction>(){};
+        var parsed = new List<FileParseResponse>(){};
 
         foreach (var row in worksheet.RowsUsed())
         {
@@ -91,15 +126,24 @@ public class TransactionsService : ITransactionsService
             if (row.Cell(1).IsEmpty()) break;
 
             if(DateTime.TryParseExact(row.Cell(1).Value.ToString(), "dd.MM.yyyy", culture,
-            DateTimeStyles.None, out DateTime dt))
+            DateTimeStyles.None, out DateTime dtLocal))
             {
-                date = dt;
+                dtLocal = DateTime.SpecifyKind(dtLocal, DateTimeKind.Unspecified);
+
+                date = TimeZoneInfo.ConvertTimeToUtc(dtLocal, turkeyTimezone);
             }
             else return null!;
 
-            if(date.CompareTo(lastTransactionDate) <= 0 && lastTransactionDate is not null) break;
+            if(newestTransactionDate != default && oldestTransactionDate != default)
+            {
+                if(date <= newestTransactionDate && date >= oldestTransactionDate)
+                {
+                    transactionRow++;
+                    continue;
+                }
+            }
 
-            if(date.CompareTo(previousDate) == 0) order++;
+            if(date == previousDate) order++;
             else
             {
                 order = 0;
@@ -110,45 +154,52 @@ public class TransactionsService : ITransactionsService
             description = row.Cell(3).Value.ToString();
             balance = Convert.ToDecimal(row.Cell(5).Value.ToString());
         
-            transactions.Add(new Transaction
+            parsed.Add(new FileParseResponse
             {
-                AccountId = accountId!,
                 Amount = amount,
                 Balance = balance,
                 DateTime = date,
-                Description = description,
-                TransactionCategoryId = transactionCategoryId,
+                Desc = description,
                 Order = order
             });
 
             transactionRow++;
         }
 
-        return transactions;
+        return parsed;
     }
 
-    public async Task<List<Transaction>> IsBankParser(IFormFile file, string accountName, string userId)
+    public async Task<List<FileParseResponse>> IsBankParser(IFormFile file, string accountName, string userId)
     {
         decimal amount;
         string description;
         decimal balance;
-        int transactionCategoryId = 0;
         int order = 0;
         DateTime date;
-        DateTime previousDate = DateTime.Now;
+        DateTime previousDate = DateTime.Now.ToUniversalTime();
+
+        var turkeyTimezone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul");
 
         var accountId = await _context.Accounts
             .Where(a => a.Name == accountName && a.UserId == userId)
             .Select(a => a.Id)
             .FirstOrDefaultAsync();
 
-        var lastTransactionDate = await _context.Transactions
+        var newestTransactionDate = await _context.Transactions
             .Where(t => t.AccountId == accountId)
             .OrderByDescending(t => t.DateTime)
             .ThenBy(t => t.Order)
+            .Select(t => t.DateTime)
             .FirstOrDefaultAsync();
 
-        var transactions = new List<Transaction>(){};
+        var oldestTransactionDate = await _context.Transactions
+            .Where(t => t.AccountId == accountId)
+            .OrderBy(t => t.DateTime)
+            .ThenByDescending(t => t.Order)
+            .Select(t => t.DateTime)
+            .FirstOrDefaultAsync();
+
+        var parsed = new List<FileParseResponse>(){};
 
         using (var stream = file.OpenReadStream())
         {
@@ -178,33 +229,38 @@ public class TransactionsService : ITransactionsService
                 else if (row.GetCell(0) == null) break;
 
                 if(DateTime.TryParseExact(row.GetCell(0)?.ToString(), "dd/MM/yyyy-HH:mm:ss", 
-                culture, DateTimeStyles.None, out DateTime dt))
+                culture, DateTimeStyles.None, out DateTime dtLocal))
                 {
-                    date = dt;
+                    dtLocal = DateTime.SpecifyKind(dtLocal, DateTimeKind.Unspecified);
+
+                    date = TimeZoneInfo.ConvertTimeToUtc(dtLocal, turkeyTimezone);
                 }
                 else return null!;
 
-                if(date.CompareTo(lastTransactionDate) <= 0 && lastTransactionDate is not null) break;
+                if(newestTransactionDate != default && oldestTransactionDate != default)
+                {
+                    if(date <= newestTransactionDate && date >= oldestTransactionDate)
+                    {
+                        transactionRow++;
+                        continue;
+                    }
+                }
+
+                if(date == previousDate) order++;
+                else{
+                    order = 0;
+                    previousDate = date;
+                }
                 
                 amount = Convert.ToDecimal(row.GetCell(3)?.ToString());
                 description = row.GetCell(8)?.ToString()!;
                 balance = Convert.ToDecimal(row.GetCell(4)?.ToString());
 
-                if(date.CompareTo(previousDate) == 0) order++;
-                else
-                {
-                    order = 0;
-                    previousDate = date;
-                }
-
-                transactions.Add(new Transaction
-                {
-                    AccountId = accountId!,
+                parsed.Add(new FileParseResponse{
                     Amount = amount,
                     Balance = balance,
                     DateTime = date,
-                    Description = description,
-                    TransactionCategoryId = transactionCategoryId,
+                    Desc = description,
                     Order = order
                 });
                     
@@ -212,6 +268,6 @@ public class TransactionsService : ITransactionsService
             }
         }
 
-        return transactions;
+        return parsed;
     }
 }

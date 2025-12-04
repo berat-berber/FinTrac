@@ -87,7 +87,7 @@ using (var scope = app.Services.CreateScope())
     {
         var obj = new AccountCategory()
         {
-            Id = 0,
+            Id = 1,
             Name = "deneme"
         };
         await _context.AccountCategories.AddAsync(obj);
@@ -103,10 +103,26 @@ using (var scope = app.Services.CreateScope())
     {
         var obj1 = new Currency()
         {
-            Id = 0,
+            Id = 1,
             Symbol = "$"
         };
         await _context.Currencies.AddAsync(obj1);
+        await _context.SaveChangesAsync();
+    }
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if(await _context.TransactionCategories.FirstOrDefaultAsync(a => a.Name == "deneme") is null)
+    {
+        var obj1 = new TransactionCategory()
+        {
+            Id = 1,
+            Name = "deneme"
+        };
+        await _context.TransactionCategories.AddAsync(obj1);
         await _context.SaveChangesAsync();
     }
 }
