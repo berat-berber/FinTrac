@@ -53,11 +53,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add authorization service
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend",
+        policy => policy
+            .WithOrigins("http://localhost:5173") // replace with your front-end URL
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 // Services Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 
 var app = builder.Build();
+
+app.UseCors("Frontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
