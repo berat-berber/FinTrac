@@ -4,6 +4,7 @@ using Backend;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyApp.Namespace
 {
@@ -38,6 +39,22 @@ namespace MyApp.Namespace
 
             return Ok();
             
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> GetTransactions()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+            var transactions = await _context.Transactions
+            .Where(t => t.Account.UserId == userId)
+            .OrderByDescending(t => t.DateTime)
+            .ThenBy(t => t.Order)
+            .Select(t => new {t.AccountId, t.Amount, t.Balance, t.DateTime, t.Description})
+            .ToListAsync();
+
+            return Ok(transactions);
         }
     }
 }
