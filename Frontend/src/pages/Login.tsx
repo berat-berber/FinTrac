@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +37,8 @@ function Login() {
       // Store the token in localStorage
       localStorage.setItem('token', token);
       
-      // Login successful
-      console.log('Login successful, token stored');
-      // TODO: Handle successful login (e.g., redirect to dashboard)
+      // Login successful - redirect to dashboard
+      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
