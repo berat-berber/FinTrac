@@ -105,7 +105,7 @@ function Dashboard() {
           <h1 className="text-4xl font-semibold" style={{ color: '#e0f2e0' }}>Dashboard</h1>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
-              onClick={() => navigate('/account')}
+              onClick={() => navigate('/createAccount')}
               className="px-4 py-2 border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
               style={{ 
                 backgroundColor: '#a8e6a8',
@@ -119,6 +119,22 @@ function Dashboard() {
               }}
             >
               Add Account
+            </button>
+            <button
+              onClick={() => navigate('/uploadSummary')}
+              className="px-4 py-2 border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+              style={{ 
+                backgroundColor: '#a8e6a8',
+                color: '#1a1a1a'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#b8f6b8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#a8e6a8';
+              }}
+            >
+              Upload Transactions
             </button>
             <button
               onClick={() => navigate('/deleteAccount')}

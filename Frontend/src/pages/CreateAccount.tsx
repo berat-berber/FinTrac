@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { fetchWithAuth } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
 
 function CreateAccount() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [accountCategory, setAccountCategory] = useState('Checking');
   const [currency, setCurrency] = useState('₺');
@@ -11,6 +12,7 @@ function CreateAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Trim whitespace from name
     const trimmedName = name.trim();
     
     if (!trimmedName) {
@@ -20,29 +22,39 @@ function CreateAccount() {
     
     setIsLoading(true);
     setError(null);
-  
+
     try {
-      const response = await fetchWithAuth('/Accounts', {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5134/api/Accounts', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: trimmedName,
           accountCategory: accountCategory,
           currency: currency,
         }),
       });
-  
+
+      if (response.status === 401) {
+        setError('Unauthorized. Please login again.');
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
       if (!response.ok) {
         setError('Failed to create account');
         return;
       }
-  
-      console.log('Account created successfully');
-      // TODO: Redirect to dashboard
+
+      // Success - redirect to dashboard
+      navigate('/dashboard');
       
     } catch (err) {
-      if (err instanceof Error && err.message.includes('Unauthorized')) {
-        return; // Already redirecting to login
-      }
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
