@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { fetchWithoutAuth } from '../utils/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -12,32 +13,24 @@ function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+  
     try {
-      const response = await fetch('http://localhost:5134/api/Auth/login', {
+      const response = await fetchWithoutAuth('/Auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           Email: email,
           Password: password,
         }),
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         setError(errorText || 'Login failed');
         return;
       }
-
-      // Get the JWT token from the response (raw format)
+  
       const token = await response.text();
-      
-      // Store the token in localStorage
       localStorage.setItem('token', token);
-      
-      // Login successful - redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');

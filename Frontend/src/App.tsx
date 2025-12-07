@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateAccount from './pages/CreateAccount';
+import UploadSummary from './pages/UploadSummary';
 import './App.css';
 
 function App() {
@@ -26,6 +27,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CreateAccount />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/uploadSummary" 
+          element={
+            <ProtectedRoute>
+              <UploadSummary />
             </ProtectedRoute>
           } 
         />
