@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateAccount from './pages/CreateAccount';
 import UploadSummary from './pages/UploadSummary';
+import DeleteAccount from './pages/DeleteAccount';
 import './App.css';
 
 function App() {
@@ -35,6 +36,14 @@ function App() {
           element={
             <ProtectedRoute>
               <UploadSummary />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/deleteAccount" 
+          element={
+            <ProtectedRoute>
+              <DeleteAccount />
             </ProtectedRoute>
           } 
         />
