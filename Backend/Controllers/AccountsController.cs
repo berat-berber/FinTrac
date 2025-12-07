@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Backend;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -55,7 +56,14 @@ namespace MyApp.Namespace
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             
-            var accounts = await _context.Accounts.Where(a => a.UserId == userId).ToListAsync();
+            var accounts = await _context.Accounts
+                .Where(a => a.UserId == userId)
+                .Select(a => new {
+                    Category = a.Category.Name, 
+                    Currency = a.Currency.Symbol,
+                    AccountName = a.Name,
+                    AccountId = a.Id})
+                .ToListAsync();
 
             if (accounts is null) return BadRequest("Not Found");
 
