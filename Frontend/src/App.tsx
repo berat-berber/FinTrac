@@ -24,7 +24,7 @@ function App() {
           } 
         />
         <Route 
-          path="/account" 
+          path="/createAccount" 
           element={
             <ProtectedRoute>
               <CreateAccount />

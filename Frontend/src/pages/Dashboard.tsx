@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../utils/api';
 
 interface Account {
@@ -21,6 +22,7 @@ interface AccountWithBalance extends Account {
 }
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState<AccountWithBalance[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,7 +101,43 @@ function Dashboard() {
   return (
     <div className="min-h-screen p-8" style={{ backgroundColor: '#2a2a2a' }}>
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-semibold mb-8" style={{ color: '#e0f2e0' }}>Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-semibold" style={{ color: '#e0f2e0' }}>Dashboard</h1>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => navigate('/account')}
+              className="px-4 py-2 border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+              style={{ 
+                backgroundColor: '#a8e6a8',
+                color: '#1a1a1a'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#b8f6b8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#a8e6a8';
+              }}
+            >
+              Add Account
+            </button>
+            <button
+              onClick={() => navigate('/deleteAccount')}
+              className="px-4 py-2 border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+              style={{ 
+                backgroundColor: '#ff6b6b',
+                color: '#ffffff'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#ff5252';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#ff6b6b';
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
+        </div>
         
         {error && (
           <div className="mb-8 p-4 rounded-lg" style={{ backgroundColor: '#ff6b6b', color: '#ffffff' }}>
