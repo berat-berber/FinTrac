@@ -97,12 +97,18 @@ namespace MyApp.Namespace
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult> DeleteAccount(string id)
         {
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
 
             if(account is null) return BadRequest("Account Not Found");
 
+            var transactions = await _context.Transactions
+                .Where(t => t.AccountId == account.Id)
+                .ToListAsync();
+
+            _context.RemoveRange(transactions);
             _context.Remove(account);
             await _context.SaveChangesAsync();
 
