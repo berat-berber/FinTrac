@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../utils/api';
 
 interface Account {
@@ -18,6 +19,7 @@ interface Transaction {
 }
 
 function UploadSummary() {
+  const navigate = useNavigate();
   const [bankName, setBankName] = useState('');
   const [accountName, setAccountName] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -25,6 +27,7 @@ function UploadSummary() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -127,7 +130,6 @@ function UploadSummary() {
       
       // Clear form
       setBankName('');
-      setAccountName('');
       setFile(null);
       
       // Reset file input
@@ -145,6 +147,58 @@ function UploadSummary() {
     } finally {
       console.log('Upload process finished');
       setIsLoading(false);
+    }
+  };
+
+  const handleDescriptionChange = (tempId: string, newDesc: string) => {
+    setTransactions(prevTransactions =>
+      prevTransactions.map(transaction =>
+        transaction.tempId === tempId
+          ? { ...transaction, desc: newDesc }
+          : transaction
+      )
+    );
+  };
+
+  const handleSendToDatabase = async () => {
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch('http://localhost:5134/api/Transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          parses: transactions,
+          accountName: accountName,
+        }),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+
+      if (!response.ok) {
+        setError('Failed to send transactions to database');
+        return;
+      }
+
+      // Success - redirect to dashboard
+      navigate('/dashboard');
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('Unauthorized')) {
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -349,7 +403,30 @@ function UploadSummary() {
         {/* Transactions List */}
         {transactions.length > 0 && (
           <div className="mt-8 rounded-xl p-6 shadow-lg" style={{ backgroundColor: '#3a3a3a', border: '1px solid #4a4a4a' }}>
-            <h2 className="text-2xl font-semibold mb-4" style={{ color: '#e0f2e0' }}>Transactions</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold" style={{ color: '#e0f2e0' }}>Transactions</h2>
+              <button 
+                onClick={handleSendToDatabase}
+                disabled={isSending}
+                className="px-4 py-2 border-none rounded-md text-sm font-semibold cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ 
+                  backgroundColor: '#a8e6a8',
+                  color: '#1a1a1a'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSending) {
+                    e.currentTarget.style.backgroundColor = '#b8f6b8';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSending) {
+                    e.currentTarget.style.backgroundColor = '#a8e6a8';
+                  }
+                }}
+              >
+                {isSending ? 'Sending...' : 'Send to Database'}
+              </button>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -369,8 +446,24 @@ function UploadSummary() {
                       <td className="p-3 text-sm" style={{ color: '#e0f2e0' }}>
                         {new Date(transaction.dateTime).toLocaleDateString()}
                       </td>
-                      <td className="p-3 text-sm" style={{ color: '#e0f2e0' }}>
-                        {transaction.desc}
+                      <td className="p-3">
+                        <input
+                          type="text"
+                          value={transaction.desc}
+                          onChange={(e) => handleDescriptionChange(transaction.tempId, e.target.value)}
+                          className="w-full p-2 rounded text-sm focus:outline-none"
+                          style={{
+                            backgroundColor: '#1a1a1a',
+                            color: '#e0f2e0',
+                            border: '1px solid #4a4a4a',
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = '#a8e6a8';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = '#4a4a4a';
+                          }}
+                        />
                       </td>
                       <td 
                         className="p-3 text-sm text-right font-semibold" 
