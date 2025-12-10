@@ -1,0 +1,34 @@
+services:
+  database:
+    image: postgres:18
+    container_name: fintrac-db
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DB: fintrac
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: fintrac-backend
+    ports:
+      - "5001:5001"
+    environment:
+      ConnectionStrings__ConnectionString: "Host=database;Port=5432;Username=postgres;Password=postgres;Database=fintrac;"
+      JWTConfig__Key: 1e2d5686470c4a9db9fa9bb82a8a33672dd7c1de64bb9d836a1fa9a54d095c0a
+      JWTConfig__Issuer: app
+      JWTConfig__Audience: app
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: fintrac-frontend
+    depends_on:
+      - backend
+

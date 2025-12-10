@@ -78,16 +78,23 @@ if (app.Environment.IsDevelopment())
 
 }
 
-// Create roles
-using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateAsyncScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    await db.Database.MigrateAsync();
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    if (!await roleManager.RoleExistsAsync("Admin"))
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    string[] roles = {"Admin", "User"};
 
-    if (!await roleManager.RoleExistsAsync("User"))
-        await roleManager.CreateAsync(new IdentityRole("User"));
+    foreach(var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
 }
 
 app.UseHttpsRedirection();
