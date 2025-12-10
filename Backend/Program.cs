@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Get connection string from .net user secrets
-var ConnectionString = builder.Configuration.GetConnectionString("ConnectionString");
+var ConnectionString = builder.Configuration["ConnectionString"];
 
 // Set up PostgreSQL database connection
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -41,10 +41,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWTConfig:Issuer"], // Get Issuer from .net user secrets
-            ValidAudience = builder.Configuration["JWTConfig:Audience"], // Get Audience from .net user secrets
+            ValidIssuer = builder.Configuration["JWTIssuer"], // Get Issuer from .net user secrets
+            ValidAudience = builder.Configuration["JWTAudience"], // Get Audience from .net user secrets
             IssuerSigningKey = 
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTConfig:Key"]!)), // Get Key from .net user secrets
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey"]!)), // Get Key from .net user secrets
             ValidateLifetime = true
         };
     }

@@ -33,13 +33,13 @@ public class AuthService : IAuthService
         claims.Add(new Claim(ClaimTypes.Role, role));
     }
 
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfig:Key")!));
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTKey")!));
 
     var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
     var JWTConfig = new JwtSecurityToken(
-        issuer: _configuration.GetValue<string>("JWTConfig:Issuer"),
-        audience: _configuration.GetValue<string>("JWTConfig:Audience"),
+        issuer: _configuration.GetValue<string>("JWTIssuer"),
+        audience: _configuration.GetValue<string>("JWTAudience"),
         claims: claims,
         expires: DateTime.UtcNow.AddMinutes(30),
         signingCredentials: credentials
