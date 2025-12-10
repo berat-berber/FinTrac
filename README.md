@@ -2,13 +2,13 @@
 
 A privacy-focused multi-bank transaction aggregator that allows users to upload, analyze, and manage financial data from multiple Turkish banks in one unified interface.
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Turkish banks provide transaction history through Excel exports, but each bank uses different formats and there's no way to view transactions across multiple accounts in one place. Existing solutions like Plaid require sharing bank credentials with third parties, raising privacy concerns.
 
 FinTrac solves this by allowing users to upload their own bank exports while maintaining complete control over their financial data.
 
-## ✨ Features
+## Features
 
 - **Multi-Bank Support**: Upload and parse Excel files from Ziraat Bank and Is Bank (more banks coming soon)
 - **Unified Dashboard**: View transactions from all accounts in one place
@@ -18,9 +18,8 @@ FinTrac solves this by allowing users to upload their own bank exports while mai
 - **Duplicate Detection**: Automatically prevents duplicate transactions when uploading the same file multiple times
 - **Secure Authentication**: JWT-based authentication with role-based authorization
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### Backend
 - **.NET 10** - Modern, high-performance backend framework
 - **ASP.NET Core Identity** - User management and authentication
 - **JWT Bearer Authentication** - Secure, stateless API authentication
@@ -29,7 +28,7 @@ FinTrac solves this by allowing users to upload their own bank exports while mai
 - **ClosedXML & NPOI** - Excel file parsing
 - **FluentValidation** - Request validation
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Backend/
@@ -55,7 +54,7 @@ Frontend/
 - **Role-based access**: Admin and User roles for future admin panel features
 - **Normalized database**: Separate tables for currencies, categories, and accounts for flexibility
 
-## 📊 Database Schema
+## Database Schema
 
 - **AspNetUsers** (via ASP.NET Identity)
 - **AspNetRoles** (via ASP.NET Identity)
@@ -66,7 +65,7 @@ Frontend/
 - **TransactionCategories** - Spending categories
 - **Currencies** - Supported currency symbols
 
-## 🔐 Security Features
+## Security Features
 
 - Password hashing via ASP.NET Identity
 - JWT tokens with expiration
@@ -74,7 +73,7 @@ Frontend/
 - Input validation with FluentValidation
 - Parameterized queries (SQL injection protection via EF Core)
 
-## 🎓 What I Learned
+## What I Learned
 
 - Parsing real-world financial data with inconsistent formats
 - Handling Turkish date localization in Excel files
@@ -82,7 +81,7 @@ Frontend/
 - Managing complex entity relationships with EF Core
 - Building a full-stack application from scratch to deployment
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - [ ] Refresh token rotation
 - [ ] Transaction categorization with ML
@@ -91,13 +90,37 @@ Frontend/
 - [ ] Support for additional Turkish banks
 - [ ] Spending analytics and visualizations
 
-## 📝 License
+## Start with Docker
+
+### Prerequisites
+- Docker
+- Git
+
+### Run the Application
+
+```bash
+# Clone the repository
+git clone https://github.com/berat-berber/FinTrac.git
+cd fintrac
+
+# Start all services
+docker compose up -d --build
+
+# Access the application
+# Frontend: http://localhost:5173
+```
+
+To stop the application:
+```bash
+docker compose down
+```
+
+## License
 
 MIT
 
-## 👨‍💻 Author
-
-[Berat Berber]
+## Author
+Berat Berber
 - LinkedIn: [www.linkedin.com/in/berat-berber]
 
 ---
