@@ -122,7 +122,3 @@ MIT
 ## Author
 Berat Berber
 - LinkedIn: [www.linkedin.com/in/berat-berber]
-
----
-
-**Note**: This is a portfolio project. Do not upload files containing real financial data unless you're comfortable with the privacy implications.
