@@ -12,7 +12,7 @@ env:
   DOTNET_VERSION: "10.x"
   SOLUTION_PATH: "BudgetTracker.sln"
   API_PROJECT_PATH: "Backend"
-  PUBLISH_DIR: "./publish"
+  PUBLISH_DIR: "./Backend/publish"
 
 jobs:
   build:
