@@ -10,7 +10,7 @@ env:
   AZURE_WEBAPP_NAME: fintrac
   AZURE_WEBAPP_PACKAGE_PATH: "./Backend/publish"
   DOTNET_VERSION: "10.x"
-  SOLUTION_PATH: "../../Budget Tracker.sln"
+  SOLUTION_PATH: "BudgetTracker.sln"
   API_PROJECT_PATH: "Backend"
   PUBLISH_DIR: "./publish"
 
