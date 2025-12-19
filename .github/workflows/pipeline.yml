@@ -11,7 +11,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: "./Backend/publish"
   DOTNET_VERSION: "10.x"
   SOLUTION_PATH: "BudgetTracker.sln"
-  API_PROJECT_PATH: "Backend"
+  API_PROJECT_PATH: "Backend/Backend.csproj"
   PUBLISH_DIR: "./Backend/publish"
 
 jobs:
