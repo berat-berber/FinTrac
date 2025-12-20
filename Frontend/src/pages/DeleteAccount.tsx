@@ -17,6 +17,7 @@ function DeleteAccount() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -62,7 +63,7 @@ function DeleteAccount() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`http://localhost:5134/api/Accounts/${selectedAccountId}`, {
+      const response = await fetch(`${API_URL}/api/Accounts/${selectedAccountId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

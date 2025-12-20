@@ -8,6 +8,7 @@ function CreateAccount() {
   const [currency, setCurrency] = useState('₺');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ function CreateAccount() {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5134/api/Accounts', {
+      const response = await fetch(API_URL + '/api/Accounts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

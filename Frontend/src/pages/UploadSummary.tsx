@@ -29,6 +29,7 @@ function UploadSummary() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -86,7 +87,7 @@ function UploadSummary() {
 
       console.log('Sending request to API...');
 
-      const response = await fetch('http://localhost:5134/api/Summaries', {
+      const response = await fetch(API_URL + '/api/Summaries', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -167,7 +168,7 @@ function UploadSummary() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5134/api/Transactions', {
+      const response = await fetch(API_URL + '/api/Transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
