@@ -55,9 +55,9 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Frontend",
+    options.AddPolicy("ProdAndDevFrontend",
         policy => policy
-            .WithOrigins(builder.Configuration["FrontendAddress"]!) // replace with your front-end URL
+            .WithOrigins(builder.Configuration["FrontendAddress"]!,"http://localhost:5173") 
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -68,7 +68,7 @@ builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 
 var app = builder.Build();
 
-app.UseCors("Frontend");
+app.UseCors("ProdAndDevFrontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
