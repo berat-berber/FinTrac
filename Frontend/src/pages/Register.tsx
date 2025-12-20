@@ -6,6 +6,7 @@ function Register() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,7 +14,7 @@ function Register() {
     setErrors([]);
 
     try {
-      const response = await fetch('http://localhost:5134/api/Auth/register', {
+      const response = await fetch(API_URL + '/api/Auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +43,6 @@ function Register() {
 
       // Registration successful
       console.log('Registration successful');
-      // TODO: Handle successful registration (e.g., redirect to login)
     } catch (err) {
       setErrors([err instanceof Error ? err.message : 'An error occurred during registration']);
     } finally {
