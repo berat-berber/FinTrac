@@ -2,6 +2,14 @@
 
 A privacy-focused multi-bank transaction aggregator that allows users to upload, analyze, and manage financial data from multiple Turkish banks in one unified interface.
 
+## Live Demo
+**[Try FinTrac Here](https://fintrac-fin.vercel.app)**
+
+## Deployment Stack
+- **Backend (API)** -> **Azure**
+- **Database** -> **Supabase**
+- **Frontend** -> **Vercel**
+
 ## Problem Statement
 
 Turkish banks provide transaction history through Excel exports, but each bank uses different formats and there's no way to view transactions across multiple accounts in one place. Existing solutions like Plaid require sharing bank credentials with third parties, raising privacy concerns.
@@ -90,7 +98,7 @@ Frontend/
 - [ ] Support for additional Turkish banks
 - [ ] Spending analytics and visualizations
 
-## Start with Docker
+## Run Locally
 
 ### Prerequisites
 - Docker
