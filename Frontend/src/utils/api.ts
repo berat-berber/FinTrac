@@ -3,7 +3,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('token');
   
-  const response = await fetch({API_BASE_URL}+ "/api/" + {endpoint}, {
+  const response = await fetch(API_BASE_URL+ "/api/" + endpoint, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
 }
 
 export async function fetchWithoutAuth(endpoint: string, options: RequestInit = {}) {
-  const response = await fetch({API_BASE_URL}+ "/api" + {endpoint}, {
+  const response = await fetch(API_BASE_URL+ "/api" + endpoint, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
