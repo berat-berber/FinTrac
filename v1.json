@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "Backend | v1",
+    "title": "FinTrac | v1",
     "version": "1.0.0"
   },
   "servers": [
