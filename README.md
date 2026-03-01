@@ -5,8 +5,10 @@ A privacy-focused multi-bank transaction aggregator that allows users to upload,
 ## Live Demo
 **[Try FinTrac Here](https://fintrac-fin.vercel.app)**
 
+**[Check API Documentation](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/berat-berber/FinTrac/refs/heads/main/v1.json)**
+
 ## Deployment Stack
-- **Backend (API)** -> **Azure**
+- **Backend** -> **Azure**
 - **Database** -> **Supabase**
 - **Frontend** -> **Vercel**
 
