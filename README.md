@@ -1,13 +1,13 @@
-# FinTrac
+# YAFT
 
-A privacy-focused multi-bank transaction aggregator that allows users to upload, analyze, and manage financial data from multiple Turkish banks in one unified interface.
+Yet Another Finance Tracker is a privacy-focused multi-bank transaction aggregator that allows users to upload, analyze, and manage financial data from multiple Turkish banks in one unified interface.
 
 ## Live Demo
-**[Try FinTrac Here](https://fintrac-fin.vercel.app)**
+**[Try YAFT Here](https://yaftapp.vercel.app)**
 
-**[Check API Documentation](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/berat-berber/FinTrac/refs/heads/main/v1.json)**
+**[Check API Documentation](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/berat-berber/yaft/refs/heads/main/v1.json)**
 
-**[See Load Test Results](https://github.com/berat-berber/FinTrac/blob/01a471f9866131b7353407d1cc73e25f945ce713/fintrac-load-test-1.pdf?raw=true)**
+**[See Load Test Results](https://github.com/berat-berber/yaft/blob/01a471f9866131b7353407d1cc73e25f945ce713/fintrac-load-test-1.pdf?raw=true)**
 
 ## Deployment Stack
 - **Backend** -> **Azure**
@@ -18,7 +18,7 @@ A privacy-focused multi-bank transaction aggregator that allows users to upload,
 
 Turkish banks provide transaction history through Excel exports, but each bank uses different formats and there's no way to view transactions across multiple accounts in one place. Existing solutions like Plaid require sharing bank credentials with third parties, raising privacy concerns.
 
-FinTrac solves this by allowing users to upload their own bank exports while maintaining complete control over their financial data.
+Yaft solves this by allowing users to upload their own bank exports while maintaining complete control over their financial data.
 
 ## Features
 
@@ -112,8 +112,8 @@ Frontend/
 
 ```bash
 # Clone the repository
-git clone https://github.com/berat-berber/FinTrac.git
-cd fintrac
+git clone https://github.com/berat-berber/yaft.git
+cd yaft
 
 # Start all services
 docker compose up -d --build

@@ -1,15 +1,15 @@
 services:
   database:
     image: postgres:18
-    container_name: fintrac-db
+    container_name: yaft-db
     ports:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: fintrac
+      POSTGRES_DB: yaft
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d fintrac"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yaft"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -18,14 +18,14 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-    container_name: fintrac-backend
+    container_name: yaft-backend
     ports:
       - "5134:5134"
     environment:
-      ConnectionString: "Host=database;Port=5432;Username=postgres;Password=postgres;Database=fintrac;"
+      ConnectionString: "Host=database;Port=5432;Username=postgres;Password=postgres;Database=yaft;"
       JWTKey: 1e2d5686470c4a9db9fa9bb82a8a33672dd7c1de64bb9d836a1fa9a54d095c0a
-      JWTIssuer: FinTrac
-      JWTAudience: FinTrac
+      JWTIssuer: yaft
+      JWTAudience: yaft
       FrontendAddress: http://localhost:5173
     depends_on:
       database:
@@ -35,7 +35,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-    container_name: fintrac-frontend
+    container_name: yaft-frontend
     ports:
       - "5173:5173"
     environment:
