@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Backend;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -73,54 +74,55 @@ namespace MyApp.Namespace
             return Ok(user);
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest request)
+        [HttpPut]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {
 
             var validationResult = _updateValidator.Validate(request);
 
             if(!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null) return BadRequest("User Not Found");
 
-            if (user!.Email != request.Email) 
+            if (user.Email != request.Email) 
             {    
                 user.Email = request.Email;
-                user.UserName = request.Email;
-                user.NormalizedEmail = request.Email.ToUpper();
-                user.NormalizedUserName = request.Email.ToUpper();
 
                 var result = await _userManager.UpdateAsync(user);
 
-                if (!result.Succeeded) return BadRequest(result);
+                if (!result.Succeeded) return BadRequest(result.Errors.Select(e => e.Description));
             }
 
             if (!await _userManager.CheckPasswordAsync(user, request.Password))
             {
                 var result = await _userManager.RemovePasswordAsync(user);
-                if (!result.Succeeded) return BadRequest(result);
+                if (!result.Succeeded) return BadRequest(result.Errors.Select(e => e.Description));
 
                 result = await _userManager.AddPasswordAsync(user, request.Password);
-                if (!result.Succeeded) return BadRequest(result);
+                if (!result.Succeeded) return BadRequest(result.Errors.Select(e => e.Description));
             }
             
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteUser(string id)
+        [HttpDelete]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> DeleteUser()
         {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null) return BadRequest("User Already Absent");
 
             var result = await _userManager.DeleteAsync(user);
 
-            if (!result.Succeeded) return BadRequest(result);
+            if (!result.Succeeded) return BadRequest(result.Errors.Select(e => e.Description));
 
             return Ok();
         }
