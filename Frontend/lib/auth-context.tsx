@@ -29,7 +29,7 @@ function parseJwt(token: string): { userId: string; email: string; name: string 
     )
     const payload = JSON.parse(jsonPayload)
     return {
-      userId: parseInt(payload.nameid || payload.sub || payload.userId),
+      userId: payload.userId,
       email: payload.email || '',
       name: payload.unique_name || payload.name || '',
     }

@@ -68,7 +68,7 @@ export function TransactionsTable({ transactions, accounts, isLoading }: Transac
 
     // Filter by account
     if (accountFilter !== 'all') {
-      result = result.filter((t) => t.accountId === parseInt(accountFilter))
+      result = result.filter((t) => t.accountId === accountFilter)
     }
 
     // Sort
