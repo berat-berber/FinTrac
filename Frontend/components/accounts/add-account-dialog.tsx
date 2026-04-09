@@ -36,7 +36,7 @@ const accountSchema = z.object({
 
 type AccountFormData = z.infer<typeof accountSchema>
 
-const currencies = ['$', '€', '₺']
+const currencies = ['TRY']
 const categories = ['Checking']
 
 interface AddAccountDialogProps {

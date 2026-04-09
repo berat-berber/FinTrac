@@ -179,7 +179,7 @@ export default function UploadPage() {
             <CardHeader>
               <CardTitle>Upload Files</CardTitle>
               <CardDescription>
-                Upload CSV or Excel files from your bank
+                Upload Excel files from your bank
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
