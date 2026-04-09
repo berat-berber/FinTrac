@@ -36,8 +36,8 @@ const accountSchema = z.object({
 
 type AccountFormData = z.infer<typeof accountSchema>
 
-const currencies = ['USD', 'EUR', 'GBP', 'TRY', 'JPY', 'AUD', 'CAD', 'CHF']
-const categories = ['Checking', 'Savings', 'Credit Card', 'Investment', 'Cash', 'Other']
+const currencies = ['$', '€', '₺']
+const categories = ['Checking']
 
 interface AddAccountDialogProps {
   onSuccess: () => void
