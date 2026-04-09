@@ -19,6 +19,8 @@ import { apiClient } from '@/lib/api-client'
 import { toast } from 'sonner'
 import type { Account } from '@/lib/types'
 
+
+
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error'
 
 interface FileUpload {
@@ -31,6 +33,8 @@ export default function UploadPage() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>('')
   const [uploads, setUploads] = useState<FileUpload[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  // Add state
+  const [selectedBankName, setSelectedBankName] = useState<string>('')
 
   const { data: accounts = [], isLoading: accountsLoading } = useSWR<Account[]>(
     'accounts',
@@ -70,6 +74,11 @@ export default function UploadPage() {
       return
     }
 
+    if (!selectedAccountId || !selectedBankName) {
+      toast.error('Please select an account and a bank first')
+      return
+    }
+
     const upload = uploads[index]
     if (!upload || upload.status === 'uploading') return
 
@@ -82,7 +91,7 @@ export default function UploadPage() {
       if (!selectedAccount) {
         throw new Error('Selected account was not found')
       }
-      await apiClient.uploadTransactions(selectedAccount.name, upload.file)
+      await apiClient.uploadTransactions(selectedAccount.name, upload.file, selectedBankName)
       setUploads((prev) =>
         prev.map((u, i) => (i === index ? { ...u, status: 'success' } : u))
       )
@@ -99,19 +108,6 @@ export default function UploadPage() {
     }
   }
 
-  const uploadAll = async () => {
-    if (!selectedAccountId) {
-      toast.error('Please select an account first')
-      return
-    }
-
-    for (let i = 0; i < uploads.length; i++) {
-      if (uploads[i].status === 'idle') {
-        await uploadFile(i)
-      }
-    }
-  }
-
   const removeFile = (index: number) => {
     setUploads((prev) => prev.filter((_, i) => i !== index))
   }
@@ -120,7 +116,6 @@ export default function UploadPage() {
     setUploads((prev) => prev.filter((u) => u.status !== 'success'))
   }
 
-  const pendingCount = uploads.filter((u) => u.status === 'idle').length
   const hasCompleted = uploads.some((u) => u.status === 'success')
 
   return (
@@ -168,6 +163,21 @@ export default function UploadPage() {
                   )}
                   <FieldDescription>
                     Transactions will be added to this account
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="bank">Bank</FieldLabel>
+                  <Select value={selectedBankName} onValueChange={setSelectedBankName}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a bank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bank_a">Is Bank</SelectItem>
+                      <SelectItem value="bank_b">Ziraat Bank</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    The bank this statement was exported from
                   </FieldDescription>
                 </Field>
               </FieldGroup>
@@ -224,11 +234,6 @@ export default function UploadPage() {
                       {hasCompleted && (
                         <Button variant="ghost" size="sm" onClick={clearCompleted}>
                           Clear completed
-                        </Button>
-                      )}
-                      {pendingCount > 0 && (
-                        <Button size="sm" onClick={uploadAll} disabled={!selectedAccountId}>
-                          Upload all ({pendingCount})
                         </Button>
                       )}
                     </div>
