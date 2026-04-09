@@ -24,9 +24,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
         );
 
         builder.Entity<Currency>().HasData(
-            new Currency { Id = 1, Symbol = "₺"},
-            new Currency { Id = 2, Symbol = "$"},
-            new Currency { Id = 3, Symbol = "€"}
+            new Currency { Id = 1, Code = "TRY"}
         );
 
         builder.Entity<TransactionCategory>().HasData(

@@ -32,7 +32,7 @@ namespace MyApp.Namespace
 
             if(accountCategory is null) return BadRequest("Invalid Category");
 
-            var currency = await _context.Currencies.FirstOrDefaultAsync(a => a.Symbol == request.Currency);
+            var currency = await _context.Currencies.FirstOrDefaultAsync(a => a.Code == request.Currency);
 
             if(currency is null) return BadRequest("Invalid Currency");
 
@@ -60,7 +60,7 @@ namespace MyApp.Namespace
                 .Where(a => a.UserId == userId)
                 .Select(a => new {
                     Category = a.Category.Name, 
-                    Currency = a.Currency.Symbol,
+                    Currency = a.Currency.Code,
                     AccountName = a.Name,
                     AccountId = a.Id})
                 .ToListAsync();
@@ -82,7 +82,7 @@ namespace MyApp.Namespace
 
             if(accountCategory is null) return BadRequest("Invalid Category");
 
-            var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Symbol == request.Currency);
+            var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Code == request.Currency);
 
             if(currency is null) return BadRequest("Invalid Currency");
 
