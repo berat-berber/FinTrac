@@ -11,8 +11,8 @@ interface StatsCardsProps {
   isLoading?: boolean
 }
 
-function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
+function formatCurrency(amount: number, currency: string = 'TRY'): string {
+  return new Intl.NumberFormat('tr-TR', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 2,
@@ -24,20 +24,37 @@ export function StatsCards({ accounts, transactions, isLoading }: StatsCardsProp
   const totalAccounts = accounts.length
   const totalTransactions = transactions.length
   
-  // Get this month's transactions
-  const now = new Date()
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  // Get the most recent month from transactions so we always show data
+  let latestDate = new Date(0)
+  transactions.forEach(t => {
+    const d = new Date(t.date)
+    if (!isNaN(d.getTime()) && d > latestDate) latestDate = d
+  })
+  
+  const startOfMonth = latestDate.getTime() > 0 
+    ? new Date(latestDate.getFullYear(), latestDate.getMonth(), 1)
+    : new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+
   const thisMonthTransactions = transactions.filter(
     (t) => new Date(t.date) >= startOfMonth
   )
   
-  const income = thisMonthTransactions
-    .filter((t) => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0)
-  
-  const expenses = thisMonthTransactions
-    .filter((t) => t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+  let income = 0
+  let expenses = 0
+
+  accounts.forEach((account) => {
+    const accountTransactions = thisMonthTransactions.filter(t => t.accountId === account.id)
+    let accountIncome = 0
+    let accountOutcome = 0
+    
+    accountTransactions.forEach(t => {
+      if (t.amount > 0) accountIncome += t.amount
+      else if (t.amount < 0) accountOutcome += Math.abs(t.amount)
+    })
+    
+    income += accountIncome
+    expenses += accountOutcome
+  })
 
   const stats = [
     {
