@@ -64,7 +64,11 @@ class ApiClient {
       let errorMessage = `API Error: ${response.status}`
       try {
         const errorJson = JSON.parse(errorText)
-        errorMessage = errorJson.message || errorJson.title || errorMessage
+        if (Array.isArray(errorJson)) {
+          errorMessage = errorJson.join(', ')
+        } else {
+          errorMessage = errorJson.message || errorJson.title || errorMessage
+        }
       } catch {
         if (errorText) errorMessage = errorText
       }
@@ -148,8 +152,8 @@ class ApiClient {
     })
   }
 
-  async deleteUser(id: number): Promise<void> {
-    await this.request<void>(`/api/Users/${id}`, { method: 'DELETE' })
+  async deleteUser(): Promise<void> {
+    await this.request<void>(`/api/Users`, { method: 'DELETE' })
   }
 
   // Account endpoints

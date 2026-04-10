@@ -1,6 +1,10 @@
 'use client'
 
 import { Link, useLocation } from 'react-router-dom'
+import useSWR from 'swr'
+import { toast } from 'sonner'
+import { apiClient } from '@/lib/api-client'
+import type { Account } from '@/lib/types'
 import {
   LayoutDashboard,
   Wallet,
@@ -8,6 +12,7 @@ import {
   Upload,
   LogOut,
   User,
+  UserX,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import {
@@ -60,14 +65,25 @@ export function AppSidebar() {
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
 
-  const userInitials = user?.name
-    ? user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    : 'U'
+  const { data: accounts = [] } = useSWR<Account[]>(
+    'accounts',
+    () => apiClient.getAccounts()
+  )
+
+  const handleDeleteAccountClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (accounts.length > 0) {
+      toast.error('You must delete all bank accounts before deleting your user account.')
+    } else {
+      try {
+        await apiClient.deleteUser()
+        toast.success('Account successfully deleted.')
+        logout()
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to delete account.')
+      }
+    }
+  }
 
   return (
     <Sidebar>
@@ -109,17 +125,9 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="h-12">
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                      {userInitials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start text-sm">
-                    <span className="font-medium">{user?.name || 'User'}</span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[140px]">
-                      {user?.email || ''}
-                    </span>
+                <SidebarMenuButton className="h-12 flex justify-center items-center">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <User className="h-4 w-4" />
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -128,9 +136,9 @@ export function AppSidebar() {
                 align="start"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
+                <DropdownMenuItem onClick={handleDeleteAccountClick} className="text-destructive">
+                  <UserX className="mr-2 h-4 w-4" />
+                  Delete Account
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="text-destructive">
