@@ -33,19 +33,20 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/u
 import { EditAccountDialog } from './edit-account-dialog'
 import { apiClient } from '@/lib/api-client'
 import { toast } from 'sonner'
-import type { Account } from '@/lib/types'
+import type { Account, Transaction } from '@/lib/types'
 
 interface AccountsListProps {
   accounts: Account[]
+  transactions?: Transaction[]
   isLoading?: boolean
   onRefresh: () => void
 }
 
-function formatCurrency(amount: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat(undefined, {
+    style: 'decimal',
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount)
 }
 
@@ -57,7 +58,7 @@ function getCategoryIcon(category: string) {
   return Wallet
 }
 
-export function AccountsList({ accounts, isLoading, onRefresh }: AccountsListProps) {
+export function AccountsList({ accounts, transactions = [], isLoading, onRefresh }: AccountsListProps) {
   const [editAccount, setEditAccount] = useState<Account | null>(null)
   const [deleteAccount, setDeleteAccount] = useState<Account | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -139,6 +140,13 @@ export function AccountsList({ accounts, isLoading, onRefresh }: AccountsListPro
           <TableBody>
             {accounts.map((account) => {
               const Icon = getCategoryIcon(account.category)
+              
+              let computedBalance = account.balance
+              const accountTransactions = transactions.filter(t => t.accountId === account.id)
+              if (accountTransactions.length > 0) {
+                computedBalance = accountTransactions[0].balance
+              }
+
               return (
                 <TableRow key={account.id}>
                   <TableCell>
@@ -153,8 +161,8 @@ export function AccountsList({ accounts, isLoading, onRefresh }: AccountsListPro
                     <Badge variant="secondary">{account.category}</Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{account.currency}</TableCell>
-                  <TableCell className={`text-right font-medium ${account.balance < 0 ? 'text-destructive' : ''}`}>
-                    {formatCurrency(account.balance, account.currency)}
+                  <TableCell className={`text-right font-medium ${computedBalance < 0 ? 'text-destructive' : ''}`}>
+                    {formatCurrency(computedBalance)}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>

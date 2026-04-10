@@ -3,26 +3,36 @@
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Account } from '@/lib/types'
+import type { Account, Transaction } from '@/lib/types'
 
 interface BalanceCardProps {
   accounts: Account[]
+  transactions?: Transaction[]
   isLoading?: boolean
 }
 
 function formatCurrency(amount: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 2,
   }).format(amount)
 }
 
-export function BalanceCard({ accounts, isLoading }: BalanceCardProps) {
+export function BalanceCard({ accounts, transactions = [], isLoading }: BalanceCardProps) {
   // Group accounts by currency and calculate totals
   const balancesByCurrency = accounts.reduce((acc, account) => {
     const currency = account.currency || 'USD'
-    acc[currency] = (acc[currency] || 0) + account.balance
+    
+    // Find latest transaction for this account
+    const accountTransactions = transactions.filter(t => t.accountId === account.id)
+    
+    let computedBalance = account.balance
+    if (accountTransactions.length > 0) {
+      computedBalance = accountTransactions[0].balance
+    }
+    
+    acc[currency] = (acc[currency] || 0) + computedBalance
     return acc
   }, {} as Record<string, number>)
 

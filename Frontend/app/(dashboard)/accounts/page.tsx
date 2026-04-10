@@ -5,13 +5,20 @@ import { DashboardHeader } from '@/components/dashboard-header'
 import { AccountsList } from '@/components/accounts/accounts-list'
 import { AddAccountDialog } from '@/components/accounts/add-account-dialog'
 import { apiClient } from '@/lib/api-client'
-import type { Account } from '@/lib/types'
+import type { Account, Transaction } from '@/lib/types'
 
 export default function AccountsPage() {
-  const { data: accounts = [], isLoading, mutate } = useSWR<Account[]>(
+  const { data: accounts = [], isLoading: accountsLoading, mutate } = useSWR<Account[]>(
     'accounts',
     () => apiClient.getAccounts()
   )
+
+  const { data: transactions = [], isLoading: transactionsLoading } = useSWR<Transaction[]>(
+    'transactions',
+    () => apiClient.getTransactions()
+  )
+
+  const isLoading = accountsLoading || transactionsLoading
 
   return (
     <div className="flex flex-col">
@@ -24,6 +31,7 @@ export default function AccountsPage() {
       <div className="flex-1 p-6">
         <AccountsList
           accounts={accounts}
+          transactions={transactions}
           isLoading={isLoading}
           onRefresh={() => mutate()}
         />
