@@ -7,7 +7,7 @@ Yet Another Finance Tracker is a privacy-focused multi-bank transaction aggregat
 
 **[Check API Documentation](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/berat-berber/yaft/refs/heads/main/v1.json)**
 
-**[See Load Test Results](https://github.com/berat-berber/yaft/blob/01a471f9866131b7353407d1cc73e25f945ce713/fintrac-load-test-1.pdf?raw=true)**
+**[See Load Test Results](https://yaftblobstorage.blob.core.windows.net/media/k6%20results/yaft-load-test-1)**
 
 ## Deployment Stack
 - **Backend** -> **Azure**
