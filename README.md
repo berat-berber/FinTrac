@@ -16,7 +16,7 @@ Yet Another Finance Tracker is a privacy-focused multi-bank transaction aggregat
 ## Deployment Stack
 - **Backend** -> **Azure**
 - **Database** -> **Supabase**
-- **Frontend** -> **Vercel**
+- **Frontend** -> **Netlify**
 
 ## Problem Statement
 
