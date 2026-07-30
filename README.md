@@ -13,6 +13,8 @@ Yet Another Finance Tracker is a privacy-focused multi-bank transaction aggregat
 
 **[See Load Test Results](https://yaftblobstorage.blob.core.windows.net/media/k6%20results/yaft-load-test-1)**
 
+**Heads up:** This app runs on free-tier hosting. If nobody has used it recently, the backend may take 10-20 seconds to wake up.
+
 ## Deployment Stack
 - **Backend** -> **Azure**
 - **Database** -> **Supabase**
